@@ -134,7 +134,7 @@ def get_iou_arr(bb1, bb2):
 def runpt(  image_data,
             sensitivity=0.3,
             overlap=0.5,
-            modelloc='weights/retail/best.pt', 
+            modelloc='weights/best.pt', 
             model_shape=(640,480),
             MODEL_MEAN_VALUES=(78.4263377603, 87.7689143744, 114.895847746),
             img_save=False,
@@ -143,14 +143,14 @@ def runpt(  image_data,
             upscale_img_mult=1
             ):
     """
-    Runs Retail detection pytorch model on an image.
+    Runs YOLO detection PyTorch model on an image.
 
     Parameters
     ----------
     image_data: Either file location or image loaded with cv2.imread
     sensitivity: How sensitive do we want accuracy of the ai model to output
     overlap: How much overlap to remove
-    modelloc: Model location, can be used with other .pt models (even those that aren't necessarily for retail identification)
+    modelloc: Model location, can be used with other .pt models
     model_shape: (640,480)
     MODEL_MEAN_VALUES: straightforward title
     img_save: Not implemented, saves image to device
@@ -161,9 +161,9 @@ def runpt(  image_data,
     Return
     ----------
     {
-        "detections": Number of retail items found,
-        "data": Retail items,
-        "image": Image of retail items
+        "detections": Number of items found,
+        "data": Items,
+        "image": Image of items detections
     }
 
     """
@@ -173,13 +173,23 @@ def runpt(  image_data,
     mx_half, my_half = (int(model_x/2), int(model_y/2))
 
     # Load model
-    model = torch.load(modelloc, map_location=torch.device("cpu")).get('model').float() # make sure model is loaded in correctly
+    try:
+        model = torch.load(modelloc, map_location=torch.device("cpu")).get('model').float() # make sure model is loaded in correctly
+    except:
+        print("ERROR LOADING MODEL. Likely improper reference location.")
+        return
 
     # Get image
     if type(image_data)==str:
-        frame = cv2.imread(image_data)
+        try:
+            frame = cv2.imread(image_data)
+        except:
+            print("ERROR LOADING IMAGE. Likely improper image location.")
     else:
-        frame = image_data
+        try:
+            frame = image_data
+        except:
+            print("ERROR LOADING IMAGE. Likely improper image format. Try OpenCV.")
     
     frame_height, frame_width, ch = frame.shape
     
@@ -287,7 +297,7 @@ def runpt(  image_data,
                     cv2.rectangle(frame, (i[0]-int(int(i[2]-i[0])/2), i[1]-int(int(i[3]-i[1])/2)), (i[2]-int(int(i[2]-i[0])/2), i[3]-int(int(i[3]-i[1])/2)), (255,0,0),2)
     
     if debug:
-        print("Found "+str(len(boxes))+" retail item(s).")
+        print("Found "+str(len(boxes))+" item(s).")
     
     frame = cv2.resize(frame, (640*2,480*2), interpolation=cv2.INTER_CUBIC)
     
@@ -303,7 +313,7 @@ def runpt(  image_data,
 
 if __name__=='__main__':
 
-    runpt("test-images/Picture3.png", 
+    runpt("images/test.png", 
         sensitivity=0.6,
         overlap=0.3,
         img_show=True,
