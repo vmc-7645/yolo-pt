@@ -6,9 +6,11 @@ Currently made to work with stricktly single class models.
 
 # Requirements
 
+```
 opencv-python
-torch (and its requirements)
+torch
 numpy
+```
 
 May also need ultralytics depending on user system.
 
