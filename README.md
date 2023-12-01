@@ -4,6 +4,11 @@ yolo-pt: A PyTorch implementation for YOLO. Tested on YOLOv8.
 
 Currently made to work with stricktly single class models.
 
+Understandably, the methods used in this make the whole point of YOLO (only looking once, that is) kind of useless. That said, for devices with extremely limited processing and memory, this is necessary to even run on larger images in the first place (having been tested up to 8k real and 32k simulated pictures). 
+
+This application is most useful for large zones that need to be monitored occasionally, such as retail shelves at a distance or drone images taken from a height.
+
+
 # Requirements
 
 ```
